@@ -267,7 +267,7 @@
         "id": "format_hazard",
         "type": "function",
         "name": "Format Log",
-        "func": "let h = msg.payload;\nif (typeof h === 'string' || Buffer.isBuffer(h)) { try { h = JSON.parse(h.toString()); } catch(e) { return null; } }\nif (!h || !h.node_id) return null;\nlet node_id = h.node_id || \"Unknown\";\nlet t_val = Number(h.T||0);\nlet p_val = Number(h.ppm||0);\nlet f_val = h.flame ? 1 : 0;\nlet color = (f_val === 1 || t_val > 47) ? '#ff5555' : ((p_val > 11) ? '#ffaa00' : '#55ff55');\nlet html = `<span style=\"color:${color}\">[${node_id}] Temp: ${t_val.toFixed(1)}&deg;C | Smoke: ${p_val.toFixed(1)} PPM | Flame: ${f_val}</span>`;\nmsg.payload = html;\nreturn msg;",
+        "func": "let h = msg.payload;\nif (typeof h === 'string' || Buffer.isBuffer(h)) { try { h = JSON.parse(h.toString()); } catch(e) { return null; } }\nif (!h || !h.node_id) return null;\nlet node_id = h.node_id || \"Unknown\";\nlet t_val = Number(h.T||0);\nlet p_val = Number(h.ppm||0);\nlet f_val = h.flame ? 1 : 0;\nlet color = (f_val === 1 || t_val > 47) ? '#ff5555' : ((p_val > 11) ? '#ffaa00' : '#55ff55');\nlet html = `<span style=\"color:${color}\">[${node_id}] Temp: ${t_val.toFixed(1)}&deg;C | Smoke: ${p_val.toFixed(1)} PPM | Flame: ${f_val}</span>`;\nlet logs = context.get('hazard_logs') || [];\nlogs.unshift(html);\nif (logs.length > 15) logs.pop();\ncontext.set('hazard_logs', logs);\nmsg.payload = logs.join('<br>');\nreturn msg;",
         "outputs": 1,
         "x": 350,
         "y": 260,
@@ -285,7 +285,7 @@
         "order": 1,
         "width": 12,
         "height": 6,
-        "format": "<h2>Live Sensor Feed</h2><div style=\"height:100%; overflow-y:auto; background:#111; color:#fff; padding:15px; font-family:monospace; border-radius:8px; border-left: 5px solid #fb8c00;\" id=\"hazard-log\"></div><script>(function(scope){scope.$watch('msg',function(msg){if(msg&&msg.payload){var log=document.getElementById('hazard-log');if(log){log.innerHTML=msg.payload+'<br>'+log.innerHTML;var lines=log.innerHTML.split('<br>');if(lines.length>15)log.innerHTML=lines.slice(0,15).join('<br>');}}});})(scope);</script>",
+        "format": "<h2>Live Sensor Feed</h2><div style=\"height:100%; overflow-y:auto; background:#111; color:#fff; padding:15px; font-family:monospace; border-radius:8px; border-left: 5px solid #fb8c00;\" id=\"hazard-log\"></div><script>(function(scope){scope.$watch('msg',function(msg){if(msg&&msg.payload){var log=document.getElementById('hazard-log');if(log){log.innerHTML=msg.payload;}}});})(scope);</script>",
         "x": 600,
         "y": 260,
         "wires": [
