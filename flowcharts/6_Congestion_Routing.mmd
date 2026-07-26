@@ -1,0 +1,21 @@
+flowchart TD
+    START["updateRouting called"] --> INIT["Initialize congestion vector\nrouteCongestion all nodes = 0"]
+
+    INIT --> V1["Victim 1\nRun Dijkstra with\ncurrent congestion weights"]
+    V1 --> P1["Path 1 found\ne.g. F2_N2 to F1_N2 to F1_N1"]
+    P1 --> C1["Increment congestion\nfor all nodes in Path 1"]
+
+    C1 --> V2["Victim 2\nRun Dijkstra with\nUPDATED congestion weights"]
+    V2 --> P2["Path 2 found\nAvoids crowded nodes from Path 1\ne.g. F2_N8 to F2_N9 to F1_N9"]
+    P2 --> C2["Increment congestion\nfor all nodes in Path 2"]
+
+    C2 --> VN["Victim N...\nEach successive victim sees\naccumulated congestion"]
+
+    VN --> PUBLISH["Publish ALL victim paths\nas JSON to MQTT"]
+    PUBLISH --> LED["First victim path\ndisplayed on LED matrix"]
+
+    style START fill:#6a1b9a,color:#fff
+    style V1 fill:#1565c0,color:#fff
+    style V2 fill:#00838f,color:#fff
+    style VN fill:#2e7d32,color:#fff
+    style PUBLISH fill:#c62828,color:#fff

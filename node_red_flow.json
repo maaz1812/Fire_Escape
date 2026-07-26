@@ -1,0 +1,549 @@
+[
+    {
+        "id": "mqtt_broker_1",
+        "type": "mqtt-broker",
+        "name": "HiveMQ",
+        "broker": "broker.hivemq.com",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true
+    },
+    {
+        "id": "dashboard_tab",
+        "type": "ui_tab",
+        "name": "Fire Commander Dashboard",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "group_health",
+        "type": "ui_group",
+        "name": "System Health",
+        "tab": "dashboard_tab",
+        "order": 1,
+        "width": "12"
+    },
+    {
+        "id": "group_routes",
+        "type": "ui_group",
+        "name": "Live Escape Routes",
+        "tab": "dashboard_tab",
+        "order": 2,
+        "width": "12"
+    },
+    {
+        "id": "group_analytics",
+        "type": "ui_group",
+        "name": "Real-Time Hazard Analytics",
+        "tab": "dashboard_tab",
+        "order": 3,
+        "width": "12"
+    },
+    {
+        "id": "group_logs",
+        "type": "ui_group",
+        "name": "Live Sensor Feed",
+        "tab": "dashboard_tab",
+        "order": 4,
+        "width": "12"
+    },
+    {
+        "id": "mqtt_in_path",
+        "type": "mqtt in",
+        "name": "Listen to Paths",
+        "topic": "fireRouter/honeywell/path",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker_1",
+        "x": 150,
+        "y": 200,
+        "wires": [
+            [
+                "format_paths"
+            ]
+        ]
+    },
+    {
+        "id": "format_paths",
+        "type": "function",
+        "name": "Format Paths + ETA",
+        "func": "let html = \"\";\ntry {\n    let obj = msg.payload;\n    if (typeof obj === 'string' || Buffer.isBuffer(obj)) { obj = JSON.parse(obj.toString()); }\n    if (obj && obj.victim_paths) {\n        html = '<ul style=\"font-size: 18px; line-height: 1.5; padding-left: 20px;\">';\n        for (let victim in obj.victim_paths) {\n            let path = obj.victim_paths[victim];\n            if (!path || path.length === 0) {\n                html += `<li><b style=\"color:#ff5555;\">${victim}:</b> Trapped! No safe route!</li>`;\n            } else {\n                let routeStr = path.join(' <span class=\"led-chase\"></span> ');\n                let eta = (path.length * 1.5).toFixed(1);\n                html += `<li><b style=\"color:#55ff55;\">${victim}:</b> <span class=\"path-arrow\">${routeStr}</span> <span style=\"color:#00acc1; font-weight:bold;\">[ETA: ${eta}s]</span></li>`;\n            }\n        }\n        html += '</ul>';\n    } else {\n        html = `<p style=\"color:#ffaa00;\">Waiting for valid path data...</p>`;\n    }\n} catch(err) {\n    html = `<p style=\"color:#ff5555;\">Error parsing path data.</p>`;\n}\nmsg.payload = html;\nreturn msg;",
+        "outputs": 1,
+        "x": 350,
+        "y": 380,
+        "wires": [
+            [
+                "ui_text_paths"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_in_sim_complete",
+        "type": "mqtt in",
+        "name": "Listen for Sim Complete",
+        "topic": "fireRouter/honeywell/sim_complete",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker_1",
+        "x": 150,
+        "y": 240,
+        "wires": [
+            [
+                "tts_paths",
+                "extract_dialog"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_in_grid",
+        "type": "mqtt in",
+        "name": "Listen to Grid HTML",
+        "topic": "fireRouter/honeywell/dashboard_grid",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker_1",
+        "x": 150,
+        "y": 420,
+        "wires": [
+            [
+                "ui_digital_twin"
+            ]
+        ]
+    },
+    {
+        "id": "group_digital_twin",
+        "type": "ui_group",
+        "name": "2D Digital Twin LED Grid",
+        "tab": "dashboard_tab",
+        "order": 0,
+        "width": 12
+    },
+    {
+        "id": "ui_digital_twin",
+        "type": "ui_template",
+        "group": "group_digital_twin",
+        "name": "Live LED Matrix Render",
+        "order": 1,
+        "width": 12,
+        "height": 10,
+        "format": "<div layout=\"column\" layout-align=\"center center\"><h2 style=\"color:#fff; margin-bottom:15px;\">Floor-by-Floor Evacuation Layout</h2><div id=\"live-grid-container\"></div></div><script>(function(scope){scope.$watch('msg',function(msg){if(msg&&msg.payload){var c=document.getElementById('live-grid-container');if(c)c.innerHTML=msg.payload;}});})(scope);</script>",
+        "x": 400,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "tts_paths",
+        "type": "function",
+        "name": "Play End of Sim TTS",
+        "func": "let obj = msg.payload;\nif (typeof obj === 'string' || Buffer.isBuffer(obj)) { try { obj = JSON.parse(obj.toString()); } catch(e) { return null; } }\nif (obj && obj.tts) { return {payload: obj.tts}; }\nreturn null;",
+        "outputs": 1,
+        "x": 400,
+        "y": 220,
+        "wires": [
+            [
+                "ui_audio_out"
+            ]
+        ]
+    },
+    {
+        "id": "ui_text_paths",
+        "type": "ui_template",
+        "group": "group_routes",
+        "name": "Victim Routes",
+        "order": 1,
+        "width": 12,
+        "height": 4,
+        "format": "<div layout=\"row\" layout-align=\"space-between\"><h2>Real-Time Evacuation Paths</h2></div><div ng-bind-html=\"msg.payload\" style=\"padding:15px; background:#222; color:white; border-radius:8px; border-left: 5px solid #00acc1;\"></div><style>.led-chase { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #00ff00; margin: 0 4px; animation: chase 1.5s infinite linear; box-shadow: 0 0 8px #00ff00; } @keyframes chase { 0% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.2; transform: scale(0.8); } } .path-arrow { display:inline-flex; align-items:center; } </style>",
+        "x": 600,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "mqtt_in_health",
+        "type": "mqtt in",
+        "name": "Listen to Health",
+        "topic": "fireRouter/honeywell/health",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker_1",
+        "x": 150,
+        "y": 100,
+        "wires": [
+            [
+                "health_online",
+                "health_watchdog"
+            ]
+        ]
+    },
+    {
+        "id": "health_watchdog",
+        "type": "trigger",
+        "name": "Watchdog (3s)",
+        "op1": "",
+        "op2": "OFFLINE",
+        "op1type": "nul",
+        "op2type": "str",
+        "duration": "3",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 350,
+        "y": 140,
+        "wires": [
+            [
+                "health_offline"
+            ]
+        ]
+    },
+    {
+        "id": "health_online",
+        "type": "function",
+        "name": "Set ONLINE",
+        "func": "msg.payload = `<div style=\"padding:10px; background:#2e7d32; color:white; text-align:center; font-weight:bold; border-radius:5px; font-size:18px;\">\u2705 ESP32 Node Network: ONLINE</div>`;\nreturn msg;",
+        "outputs": 1,
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "ui_health"
+            ]
+        ]
+    },
+    {
+        "id": "health_offline",
+        "type": "function",
+        "name": "Set OFFLINE",
+        "func": "msg.payload = `<div style=\"padding:10px; background:#c62828; color:white; text-align:center; font-weight:bold; border-radius:5px; font-size:18px;\">\u26a0\ufe0f ESP32 Node Network: OFFLINE (Signal Lost)</div>`;\nreturn msg;",
+        "outputs": 1,
+        "x": 550,
+        "y": 140,
+        "wires": [
+            [
+                "ui_health"
+            ]
+        ]
+    },
+    {
+        "id": "ui_health",
+        "type": "ui_template",
+        "group": "group_health",
+        "name": "Health Indicator",
+        "order": 1,
+        "width": 12,
+        "height": 2,
+        "format": "<div id=\"health-container\"></div>\n<script>\n(function(scope) {\n    scope.$watch('msg', function(msg) {\n        if (msg && msg.payload) {\n            var c = document.getElementById('health-container');\n            if (c) c.innerHTML = msg.payload;\n        }\n    });\n})(scope);\n</script>",
+        "x": 750,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "mqtt_in_hazard",
+        "type": "mqtt in",
+        "name": "Listen to Hazards",
+        "topic": "fireRouter/honeywell/hazard/+",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "mqtt_broker_1",
+        "x": 150,
+        "y": 300,
+        "wires": [
+            [
+                "format_hazard",
+                "calc_analytics"
+            ]
+        ]
+    },
+    {
+        "id": "format_hazard",
+        "type": "function",
+        "name": "Format Log",
+        "func": "let h = msg.payload;\nif (typeof h === 'string' || Buffer.isBuffer(h)) { try { h = JSON.parse(h.toString()); } catch(e) { return null; } }\nif (!h || !h.node_id) return null;\nlet node_id = h.node_id || \"Unknown\";\nlet t_val = Number(h.T||0);\nlet p_val = Number(h.ppm||0);\nlet f_val = h.flame ? 1 : 0;\nlet color = (f_val === 1 || t_val > 47) ? '#ff5555' : ((p_val > 11) ? '#ffaa00' : '#55ff55');\nlet html = `<span style=\"color:${color}\">[${node_id}] Temp: ${t_val.toFixed(1)}&deg;C | Smoke: ${p_val.toFixed(1)} PPM | Flame: ${f_val}</span>`;\nmsg.payload = html;\nreturn msg;",
+        "outputs": 1,
+        "x": 350,
+        "y": 260,
+        "wires": [
+            [
+                "ui_log_hazard"
+            ]
+        ]
+    },
+    {
+        "id": "ui_log_hazard",
+        "type": "ui_template",
+        "group": "group_logs",
+        "name": "Live Sensor Feed",
+        "order": 1,
+        "width": 12,
+        "height": 6,
+        "format": "<h2>Live Sensor Feed</h2><div style=\"height:100%; overflow-y:auto; background:#111; color:#fff; padding:15px; font-family:monospace; border-radius:8px; border-left: 5px solid #fb8c00;\" id=\"hazard-log\"></div><script>(function(scope){scope.$watch('msg',function(msg){if(msg&&msg.payload){var log=document.getElementById('hazard-log');if(log){log.innerHTML=msg.payload+'<br>'+log.innerHTML;var lines=log.innerHTML.split('<br>');if(lines.length>15)log.innerHTML=lines.slice(0,15).join('<br>');}}});})(scope);</script>",
+        "x": 600,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "calc_analytics",
+        "type": "function",
+        "name": "Extract Analytics",
+        "func": "let h = msg.payload;\nif (typeof h === 'string' || Buffer.isBuffer(h)) { try { h = JSON.parse(h.toString()); } catch(e) { return null; } }\nif (!h || !h.node_id) return null;\n\nlet nodes = context.get('nodes') || {};\nnodes[h.node_id] = h;\ncontext.set('nodes', nodes);\n\nlet maxTemp = 0;\nlet maxSmoke = 0;\nlet hazardCount = 0;\nlet fireZones = [];\n\nfor (let id in nodes) {\n    if (nodes[id].T > maxTemp) maxTemp = nodes[id].T;\n    if (nodes[id].ppm > maxSmoke) maxSmoke = nodes[id].ppm;\n    if (nodes[id].T > 47 || nodes[id].ppm > 11 || nodes[id].flame) {\n        hazardCount++;\n        fireZones.push(id);\n    }\n}\n\nlet fireHtml = \"\";\nif (fireZones.length > 0) {\n    fireHtml = \"<div style='display:flex; flex-wrap:wrap; gap:10px;'>\";\n    for(let i=0; i<fireZones.length; i++){\n        fireHtml += `<div style='background:#e53935; color:white; padding:8px 15px; border-radius:5px; font-weight:bold; box-shadow: 0 0 10px #e53935;'>\\uD83D\\uDD25 ${fireZones[i]}</div>`;\n    }\n    fireHtml += \"</div>\";\n} else {\n    fireHtml = \"<div style='color:#4CAF50; font-weight:bold; font-size:18px;'>\\u2705 All zones clear</div>\";\n}\n\nreturn [{payload: maxTemp}, {payload: maxSmoke}, {payload: hazardCount}, {payload: hazardCount}, {payload: fireHtml}];",
+        "outputs": 5,
+        "x": 350,
+        "y": 340,
+        "wires": [
+            [
+                "chart_temp"
+            ],
+            [
+                "gauge_smoke",
+                "hvac_logic"
+            ],
+            [
+                "gauge_hazard_ratio"
+            ],
+            [
+                "tts_trigger"
+            ],
+            [
+                "ui_fire_map"
+            ]
+        ]
+    },
+    {
+        "id": "chart_temp",
+        "type": "ui_chart",
+        "group": "group_analytics",
+        "name": "Peak Temp (\u00c2\u00b0C)",
+        "label": "Peak Building Temperature (\u00c2\u00b0C)",
+        "order": 1,
+        "width": 4,
+        "height": 5,
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "20",
+        "ymax": "100",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#e53935",
+            "#1F77B4",
+            "#FF7F0E",
+            "#2CA02C",
+            "#98DF8A",
+            "#D62728",
+            "#FF9896",
+            "#9467BD",
+            "#C5B0D5"
+        ],
+        "outputs": 1,
+        "x": 600,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_smoke",
+        "type": "ui_gauge",
+        "group": "group_analytics",
+        "name": "Smoke PPM",
+        "title": "Max Smoke PPM",
+        "label": "ppm",
+        "order": 2,
+        "width": 4,
+        "height": 5,
+        "gtype": "gage",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 20,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "5",
+        "seg2": "11",
+        "x": 600,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_hazard_ratio",
+        "type": "ui_gauge",
+        "group": "group_analytics",
+        "name": "Rooms on Fire",
+        "title": "Rooms on Fire",
+        "label": "rooms",
+        "order": 3,
+        "width": 4,
+        "height": 5,
+        "gtype": "donut",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "2",
+        "seg2": "5",
+        "x": 600,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "tts_trigger",
+        "type": "function",
+        "name": "Trigger TTS Alarm",
+        "func": "let rooms = msg.payload;\nlet wasFire = context.get(\"wasFire\") || false;\nlet isFire = (rooms > 0);\n\nif (isFire && !wasFire) {\n    context.set(\"wasFire\", true);\n    return {payload: \"Warning! Fire hazard detected. Commencing dynamic evacuation.\"};\n} else if (!isFire && wasFire) {\n    context.set(\"wasFire\", false);\n    return {payload: \"Hazard resolved. System returning to normal.\"};\n}\nreturn null;",
+        "outputs": 1,
+        "x": 600,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_audio_out",
+        "type": "ui_audio",
+        "name": "Browser TTS",
+        "group": "group_analytics",
+        "voice": "",
+        "always": true,
+        "x": 800,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "group_hvac",
+        "type": "ui_group",
+        "name": "Building Subsystems",
+        "tab": "dashboard_tab",
+        "order": 5,
+        "width": "12"
+    },
+    {
+        "id": "hvac_logic",
+        "type": "function",
+        "name": "HVAC Auto-Shutoff",
+        "func": "let maxSmoke = msg.payload;\nlet wasHvacEngaged = context.get(\"hvacEngaged\") || false;\nlet isHvacEngaged = (maxSmoke > 10);\nlet html = \"\";\nlet speech = null;\n\nif (isHvacEngaged) {\n    html = `<div style=\"padding:15px; background:#c62828; color:white; text-align:center; font-weight:bold; border-radius:5px; font-size:18px;\">\\uD83D\\uDEA8 HVAC: EMERGENCY O2 STARVATION MODE ENGAGED</div>`;\n    if (!wasHvacEngaged) {\n        speech = \"Critical smoke levels detected. HVAC oxygen starvation protocol engaged. Air flow restricted.\";\n    }\n} else {\n    html = `<div style=\"padding:15px; background:#2e7d32; color:white; text-align:center; font-weight:bold; border-radius:5px; font-size:18px;\">\\u2705 HVAC: NORMAL VENTILATION</div>`;\n    if (wasHvacEngaged) {\n        speech = \"Smoke cleared. HVAC returning to normal ventilation.\";\n    }\n}\n\ncontext.set(\"hvacEngaged\", isHvacEngaged);\nreturn [{payload: html}, speech ? {payload: speech} : null];",
+        "outputs": 2,
+        "x": 600,
+        "y": 460,
+        "wires": [
+            [
+                "ui_hvac_status"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "ui_hvac_status",
+        "type": "ui_template",
+        "group": "group_hvac",
+        "name": "HVAC Status",
+        "order": 1,
+        "width": 12,
+        "height": 2,
+        "format": "<div id=\"hvac-container\"></div>\n<script>\n(function(scope) {\n    scope.$watch('msg', function(msg) {\n        if (msg && msg.payload) {\n            var c = document.getElementById('hvac-container');\n            if (c) c.innerHTML = msg.payload;\n        }\n    });\n})(scope);\n</script>",
+        "x": 800,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ui_fire_map",
+        "type": "ui_template",
+        "group": "group_routes",
+        "name": "Active Fire Zones",
+        "order": 2,
+        "width": 12,
+        "height": 2,
+        "format": "<h2>Active Fire Zones</h2>\n<div style=\"padding:15px; background:#222; border-radius:8px; border-left: 5px solid #e53935; min-height:50px;\">\n    <div id=\"fire-map-container\"></div>\n</div>\n<script>\n(function(scope) {\n    scope.$watch('msg', function(msg) {\n        if (msg && msg.payload) {\n            var c = document.getElementById('fire-map-container');\n            if (c) c.innerHTML = msg.payload;\n        }\n    });\n})(scope);\n</script>",
+        "x": 600,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "group_legend",
+        "type": "ui_group",
+        "name": "Dashboard Legend & Guide",
+        "tab": "dashboard_tab",
+        "order": 10,
+        "width": 12
+    },
+    {
+        "id": "ui_legend_text",
+        "type": "ui_template",
+        "group": "group_legend",
+        "name": "Legend Template",
+        "order": 1,
+        "width": 12,
+        "height": 8,
+        "format": "\n<div style=\"padding:15px; color:#ddd; font-family:sans-serif; background:#222; border-radius:8px;\">\n    <h3 style=\"color:#00acc1; margin-top:0;\">How to read this dashboard</h3>\n    <ul style=\"line-height:1.6;\">\n        <li><b>Rooms on Fire (Donut Chart):</b> Counts any room with a Flame, Temp > 47\u00b0C, OR Smoke > 11 PPM.</li>\n        <li><b>\ud83d\udd34 Red Rooms (2D Grid):</b> Extreme hazard (Active Flame or Temp > 47\u00b0C). Total blockage.</li>\n        <li><b>\ud83d\udfe0 Orange Rooms (2D Grid):</b> High smoke hazard (> 11 PPM). Victims suffer damage.</li>\n        <li><b>\ud83d\udfe2 Bright Green Rooms (2D Grid):</b> The active escape route calculated by the algorithm. <i>Note: Green color visually overrides red/orange if the router is forced to send victims through a hazardous room due to blockages elsewhere!</i></li>\n        <li><b>\ud83d\udfe9 Dark Green Rooms (2D Grid):</b> Safe exits.</li>\n        <li><b>\u2b1b Dark Grey Rooms (2D Grid):</b> Safe, unaffected rooms.</li>\n    </ul>\n</div>\n",
+        "x": 400,
+        "y": 800,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "extract_dialog",
+        "type": "function",
+        "name": "Extract Dialog Text",
+        "func": "let p = msg.payload;\nif (typeof p === 'string' || Buffer.isBuffer(p)) {\n    try { p = JSON.parse(p.toString()); } catch(e) { return null; }\n}\nif (p && p.dialog) {\n    msg.payload = p.dialog.replace(/\\\\n/g, '\\n');\n    return msg;\n}\nreturn null;",
+        "outputs": 1,
+        "x": 350,
+        "y": 280,
+        "wires": [
+            [
+                "dialog_toast"
+            ]
+        ]
+    },
+    {
+        "id": "dialog_toast",
+        "type": "ui_toast",
+        "position": "dialog",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 1,
+        "ok": "Dismiss",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "Simulation Results",
+        "name": "Simulation Dialog Box",
+        "x": 550,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    }
+]

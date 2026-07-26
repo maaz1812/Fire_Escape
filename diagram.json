@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "author": "You",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": -60,
+      "left": 60,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-neopixel-matrix",
+      "id": "matrix1",
+      "top": -450,
+      "left": 200,
+      "attrs": {
+        "rows": "16",
+        "cols": "16"
+      }
+    },
+    {
+      "type": "wokwi-neopixel-matrix",
+      "id": "matrix2",
+      "top": -150,
+      "left": 200,
+      "attrs": {
+        "rows": "16",
+        "cols": "16"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "matrix1:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "matrix1:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "matrix2:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "matrix2:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "bz1:1",
+      "esp:D5",
+      "green",
+      []
+    ],
+    [
+      "bz1:2",
+      "esp:GND.2",
+      "black",
+      []
+    ],
+    [
+      "esp:TX0",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX0",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "esp:D4",
+      "matrix1:DIN",
+      "green",
+      []
+    ],
+    [
+      "matrix1:DOUT",
+      "matrix2:DIN",
+      "green",
+      []
+    ]
+  ]
+}

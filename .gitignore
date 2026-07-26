@@ -1,0 +1,29 @@
+# PlatformIO build artifacts
+.pio/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# PyInstaller dist output
+dist/
+build/
+*.spec
+
+# Secrets — NEVER commit token
+.env
+
+# VS Code personal settings
+.vscode/
+
+# Wokwi CLI binary (downloaded automatically)
+.wokwi/
+
+# OS noise
+Thumbs.db
+.DS_Store
+
+# Log files
+serial_output.txt

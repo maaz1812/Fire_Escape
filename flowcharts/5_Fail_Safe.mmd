@@ -1,0 +1,34 @@
+flowchart TD
+    subgraph HEARTBEAT["Heartbeat Monitor"]
+        H1["ESP32 publishes\nstatus ONLINE\nevery 1 second"] --> H2{"Node-RED:\nHeartbeat received\nwithin 5 seconds?"}
+        H2 -->|Yes| H3["Status: ONLINE\nGreen indicator"]
+        H2 -->|No| H4["Status: OFFLINE\nSignal Lost warning"]
+    end
+
+    subgraph CORRUPT["Corrupted Payload Handling"]
+        C1["MQTT message\narrives on ESP32"] --> C2{"JSON parse\nsuccessful?"}
+        C2 -->|No| C3["Log warning\nSilently reject\nSystem continues"]
+        C2 -->|Yes| C4{"Contains\nnode_id field?"}
+        C4 -->|No| C5["Log: missing node_id\nSilently reject"]
+        C4 -->|Yes| C6{"node_id exists\nin graph?"}
+        C6 -->|No| C7["Log: unrecognized\nnode_id - reject"]
+        C6 -->|Yes| C8["Process\nhazard update"]
+    end
+
+    subgraph TRAPPED_DETECT["Trapped Victim Detection"]
+        T1["Dijkstra runs\nfor victim node"] --> T2{"Any exit\nreachable?"}
+        T2 -->|Yes| T3["Return path\nUpdate LEDs green"]
+        T2 -->|No| T4["Return empty path\nVictim declared TRAPPED"]
+    end
+
+    subgraph BUZZER_SAFE["Non-Blocking Buzzer"]
+        B1{"Hazard detected\non path?"}
+        B1 -->|"Yes first time"| B2["Single 500ms beep\ntone 1000Hz 500ms"]
+        B1 -->|"Yes already beeped"| B3["Silent - no repeat"]
+        B1 -->|"No path clear"| B4["Reset buzzer state"]
+    end
+
+    style HEARTBEAT fill:#1b5e20,color:#fff,stroke:#a5d6a7
+    style CORRUPT fill:#0d47a1,color:#fff,stroke:#42a5f5
+    style TRAPPED_DETECT fill:#b71c1c,color:#fff,stroke:#ef9a9a
+    style BUZZER_SAFE fill:#e65100,color:#fff,stroke:#ffb74d

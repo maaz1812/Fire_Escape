@@ -1,0 +1,381 @@
+{
+  "grid_size": "3x3x3",
+  "max_floors": 3,
+  "max_rows": 3,
+  "max_cols": 3,
+  "total_nodes": 25,
+  "exits": [
+    "F1_N1",
+    "F1_N9"
+  ],
+  "occupant_starts": [
+    "F3_N1",
+    "F3_N9",
+    "F1_N5"
+  ],
+  "nodes": [
+    {
+      "id": "F1_N1",
+      "floor": 1,
+      "row": 0,
+      "col": 0,
+      "type": "exit"
+    },
+    {
+      "id": "F1_N2",
+      "floor": 1,
+      "row": 0,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F1_N3",
+      "floor": 1,
+      "row": 0,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F1_N4",
+      "floor": 1,
+      "row": 1,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F1_N5",
+      "floor": 1,
+      "row": 1,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F1_N6",
+      "floor": 1,
+      "row": 1,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F1_N7",
+      "floor": 1,
+      "row": 2,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F1_N8",
+      "floor": 1,
+      "row": 2,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F1_N9",
+      "floor": 1,
+      "row": 2,
+      "col": 2,
+      "type": "exit"
+    },
+    {
+      "id": "F2_N1",
+      "floor": 2,
+      "row": 0,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F2_N2",
+      "floor": 2,
+      "row": 0,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F2_N3",
+      "floor": 2,
+      "row": 0,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F2_N4",
+      "floor": 2,
+      "row": 1,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F2_N5",
+      "floor": 2,
+      "row": 1,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F2_N6",
+      "floor": 2,
+      "row": 1,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F2_N7",
+      "floor": 2,
+      "row": 2,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F2_N8",
+      "floor": 2,
+      "row": 2,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F2_N9",
+      "floor": 2,
+      "row": 2,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F3_N1",
+      "floor": 3,
+      "row": 0,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F3_N3",
+      "floor": 3,
+      "row": 0,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F3_N5",
+      "floor": 3,
+      "row": 1,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F3_N6",
+      "floor": 3,
+      "row": 1,
+      "col": 2,
+      "type": "room"
+    },
+    {
+      "id": "F3_N7",
+      "floor": 3,
+      "row": 2,
+      "col": 0,
+      "type": "room"
+    },
+    {
+      "id": "F3_N8",
+      "floor": 3,
+      "row": 2,
+      "col": 1,
+      "type": "room"
+    },
+    {
+      "id": "F3_N9",
+      "floor": 3,
+      "row": 2,
+      "col": 2,
+      "type": "room"
+    }
+  ],
+  "edges": [
+    {
+      "from": "F1_N1",
+      "to": "F1_N2",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N1",
+      "to": "F1_N4",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N2",
+      "to": "F1_N3",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N2",
+      "to": "F1_N5",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N3",
+      "to": "F1_N6",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N4",
+      "to": "F1_N5",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N4",
+      "to": "F1_N7",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N5",
+      "to": "F1_N6",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N5",
+      "to": "F1_N8",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N6",
+      "to": "F1_N9",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N7",
+      "to": "F1_N8",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N8",
+      "to": "F1_N9",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N1",
+      "to": "F2_N2",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N1",
+      "to": "F2_N4",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N2",
+      "to": "F2_N3",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N2",
+      "to": "F2_N5",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N3",
+      "to": "F2_N6",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N4",
+      "to": "F2_N5",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N4",
+      "to": "F2_N7",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N5",
+      "to": "F2_N6",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N5",
+      "to": "F2_N8",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N6",
+      "to": "F2_N9",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N7",
+      "to": "F2_N8",
+      "base_distance": 10
+    },
+    {
+      "from": "F2_N8",
+      "to": "F2_N9",
+      "base_distance": 10
+    },
+    {
+      "from": "F3_N3",
+      "to": "F3_N6",
+      "base_distance": 10
+    },
+    {
+      "from": "F3_N5",
+      "to": "F3_N6",
+      "base_distance": 10
+    },
+    {
+      "from": "F3_N5",
+      "to": "F3_N8",
+      "base_distance": 10
+    },
+    {
+      "from": "F3_N6",
+      "to": "F3_N9",
+      "base_distance": 10
+    },
+    {
+      "from": "F3_N7",
+      "to": "F3_N8",
+      "base_distance": 10
+    },
+    {
+      "from": "F3_N8",
+      "to": "F3_N9",
+      "base_distance": 10
+    },
+    {
+      "from": "F1_N5",
+      "to": "F2_N5",
+      "base_distance": 15.0,
+      "stair_type": "normal"
+    },
+    {
+      "from": "F1_N6",
+      "to": "F2_N6",
+      "base_distance": 15.0,
+      "stair_type": "normal"
+    },
+    {
+      "from": "F1_N7",
+      "to": "F2_N7",
+      "base_distance": 8.0,
+      "stair_type": "escape"
+    },
+    {
+      "from": "F2_N5",
+      "to": "F3_N5",
+      "base_distance": 15.0,
+      "stair_type": "normal"
+    },
+    {
+      "from": "F2_N6",
+      "to": "F3_N6",
+      "base_distance": 15.0,
+      "stair_type": "normal"
+    },
+    {
+      "from": "F2_N7",
+      "to": "F3_N7",
+      "base_distance": 8.0,
+      "stair_type": "escape"
+    }
+  ]
+}

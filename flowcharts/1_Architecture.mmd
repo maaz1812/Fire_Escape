@@ -1,0 +1,58 @@
+flowchart TB
+    subgraph SIMULATION["Simulation Layer - Python"]
+        A["Grid Setup Dialog\nFloors x Rows x Cols"] --> B["Graph Generator\nNodes + Edges + Stairs"]
+        B --> C["floor_graph.json"]
+        C --> D["Injector Tool GUI\nTkinter"]
+        D --> E{"User Selects\nHazard Brush"}
+        E -->|Fast Flashover| F["NIST Curve: 0.070 C/step"]
+        E -->|Slow Smolder| G["NIST Curve: 0.0015 C/step"]
+        E -->|Chemical Spill| H["NIST Curve: 0 temp, 0.05 PPM/step"]
+        E -->|Small Fire| I["NIST Curve: 0.01 C/step"]
+        F & G & H & I --> J["20-Step Fire Simulation\n+ Auto Fire Spread"]
+    end
+
+    subgraph MQTT_CLOUD["MQTT Cloud Broker - HiveMQ"]
+        T1[/"graph/config"/]
+        T2[/"hazard/node_id"/]
+        T3[/"path"/]
+        T4[/"health"/]
+        T5[/"dashboard_grid"/]
+    end
+
+    subgraph ESP32["ESP32 Edge Processor - Wokwi"]
+        K["Receive Graph Config\nbuildGraphFromJson"] --> L["Build Adjacency List\n+ Map Nodes to LEDs"]
+        L --> M["Receive Hazard Update\nupdateHazard"]
+        M --> N["Sensor Fusion\nCost Formula"]
+        N --> O["Dijkstra Algorithm\ncomputeDijkstraPath"]
+        O --> P["Multi-Victim\nCongestion Routing"]
+        P --> Q["Publish Paths\nvia MQTT"]
+        P --> R["Update LED Matrix\nupdateLEDs"]
+        P --> S["Trigger Buzzer\nupdateBuzzer"]
+    end
+
+    subgraph DASHBOARD["Node-RED Dashboard"]
+        U["System Health Monitor"]
+        V["2D Digital Twin Grid"]
+        W["Live Escape Routes"]
+        X["Hazard Analytics\nCharts + Gauges"]
+        Y["HVAC O2 Starvation Mode"]
+        Z["TTS Voice Alerts"]
+    end
+
+    C -->|Publish| T1
+    J -->|Publish Hazard| T2
+    T1 -->|Subscribe| K
+    T2 -->|Subscribe| M
+    Q -->|Publish| T3
+    ESP32 -->|Heartbeat 1s| T4
+
+    T3 -->|Subscribe| W
+    T4 -->|Subscribe| U
+    T2 -->|Subscribe| X
+    D -->|Publish HTML| T5
+    T5 -->|Subscribe| V
+
+    style SIMULATION fill:#1a237e,color:#fff,stroke:#5c6bc0
+    style MQTT_CLOUD fill:#4a148c,color:#fff,stroke:#ce93d8
+    style ESP32 fill:#b71c1c,color:#fff,stroke:#ef9a9a
+    style DASHBOARD fill:#1b5e20,color:#fff,stroke:#a5d6a7

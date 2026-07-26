@@ -1,0 +1,34 @@
+flowchart TD
+    START["Simulation Begins\n20 Steps x 1 second each"] --> STEP["Step i = 0"]
+
+    STEP --> ESCALATE["Escalate ALL active hazards\nT += progress x peak_T minus 22\nPPM += progress x peak_PPM"]
+
+    ESCALATE --> PUBLISH["Publish hazard update\nto MQTT for each node"]
+
+    PUBLISH --> SPREAD_CHECK{"Should fire\nspread at\nthis step?"}
+
+    SPREAD_CHECK -->|"Fast Fire: step 6, 12, 18"| FIND_NEIGHBOR
+    SPREAD_CHECK -->|"Chem Spill: step 8, 16"| FIND_NEIGHBOR
+    SPREAD_CHECK -->|"Slow Smolder: step 15"| FIND_NEIGHBOR
+    SPREAD_CHECK -->|"No spread this step"| DASHBOARD_UPDATE
+
+    FIND_NEIGHBOR["Walk graph edges\nFind 1 adjacent room\nNOT already on fire"] --> NEW_FIRE["Stage new hazard\non neighbor node"]
+    NEW_FIRE --> LOG["Log: FIRE SPREAD\nto new room"]
+    LOG --> DASHBOARD_UPDATE
+
+    DASHBOARD_UPDATE["Publish HTML Digital Twin\nto Node-RED Dashboard"]
+
+    DASHBOARD_UPDATE --> NEXT{"i less than 20?"}
+    NEXT -->|Yes| INCREMENT["i++"] --> STEP
+    NEXT -->|No| CONCLUDE["Simulation Complete\nEvaluate final escape routes"]
+
+    CONCLUDE --> VICTIMS["For each victim"]
+    VICTIMS --> CHECK_PATH{"Path reaches\nan exit?"}
+    CHECK_PATH -->|Yes| SAFE["Victim safely escapes\nAnnounce route via TTS"]
+    CHECK_PATH -->|No| TRAPPED["Victim is TRAPPED\nNo possible escape path"]
+
+    style START fill:#1565c0,color:#fff
+    style FIND_NEIGHBOR fill:#e65100,color:#fff
+    style NEW_FIRE fill:#c62828,color:#fff
+    style SAFE fill:#2e7d32,color:#fff
+    style TRAPPED fill:#b71c1c,color:#fff

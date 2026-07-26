@@ -1,0 +1,46 @@
+flowchart TD
+    START(["Hazard Update Received\nfor Node N"]) --> INPUT
+
+    subgraph INPUT["Raw Sensor Inputs"]
+        I1["Temperature T in C"]
+        I2["Smoke Density PPM"]
+        I3["Flame Detected 0 or 1"]
+        I4["Occupancy Count"]
+        I5["Base Distance d meters"]
+    end
+
+    I1 --> TF
+    I2 --> SF
+    I3 --> FF
+    I4 --> OF
+    I5 --> FINAL
+
+    subgraph FACTORS["Exponential Weight Factors"]
+        TF["Temp Factor\n1 + alpha x e to the power of T minus 47 over 10\n22C = 1.08 safe\n40C = 1.49 warm\n47C = 2.00 DANGER\n55C = 3.23 LETHAL"]
+        SF["Smoke Factor\n1 + beta x e to the power of PPM minus 11.5 over 5\n0 PPM = 1.10 clear\n6 PPM = 1.33 hazy\n11.5 PPM = 2.00 DANGER\n15 PPM = 3.01 BLIND"]
+        FF["Flame Factor\n1 + gamma x flame\nNo Flame = 1.0x\nFlame = 21.0x"]
+        OF["Occupancy Factor\n1 + delta x occupancy\n0 people = 1.0x\n5 people = 1.75x"]
+    end
+
+    TF & SF & FF & OF --> FINAL
+
+    FINAL["FINAL EDGE COST\nC = d x TempFactor x SmokeFactor\nx FlameFactor x OccupancyFactor"]
+
+    FINAL --> COMPARE{{"Cost Comparison"}}
+
+    COMPARE -->|"Safe: ~12.6"| SAFE["Green LED\nInclude in path"]
+    COMPARE -->|"Moderate: ~16"| WARN["Yellow\nPassable but penalized"]
+    COMPARE -->|"Danger: ~3460+"| BLOCK["Red LED\nDijkstra avoids"]
+
+    SAFE --> DIJKSTRA["Dijkstra selects\nLOWEST total cost path"]
+    WARN --> DIJKSTRA
+    BLOCK --> DIJKSTRA
+
+    DIJKSTRA --> ROUTE(["Safest Escape Route\nPublished to MQTT"])
+
+    style INPUT fill:#0d47a1,color:#fff,stroke:#42a5f5
+    style FACTORS fill:#e65100,color:#fff,stroke:#ffb74d
+    style FINAL fill:#880e4f,color:#fff,stroke:#f48fb1
+    style SAFE fill:#2e7d32,color:#fff
+    style WARN fill:#f9a825,color:#000
+    style BLOCK fill:#c62828,color:#fff

@@ -1,0 +1,10 @@
+name: 'Flashover blocks N2 route'
+version: 1
+author: 'You'
+
+steps:
+  - wait-serial: 'Initial path computed.'
+  - delay: 500ms
+  - write-serial: "N,1,48,11,1,2\n"
+  - wait-serial: 'Recomputed in'
+  - delay: 500ms

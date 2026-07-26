@@ -1,0 +1,36 @@
+flowchart TD
+    BOOT["ESP32 Boot"] --> WIFI["Connect WiFi\nWokwi-GUEST"]
+    WIFI --> MQTT_CONN["Connect MQTT\nbroker.hivemq.com"]
+    MQTT_CONN --> SUB["Subscribe to\nhazard/# + graph/config"]
+    SUB --> WAIT["Wait for Graph Config\ngraphReady = false"]
+
+    WAIT -->|"Graph JSON received"| BUILD["buildGraphFromJson\nParse nodes, edges, exits"]
+    BUILD --> INIT_PATH["Initial Dijkstra\ncomputeDijkstraPath"]
+    INIT_PATH --> LOOP
+
+    LOOP["loop start"] --> MQTT_LOOP["mqttClient.loop\nProcess incoming messages"]
+    MQTT_LOOP --> HEARTBEAT{"1 second\nelapsed?"}
+    HEARTBEAT -->|Yes| PUB_HEALTH["Publish health heartbeat\nstatus ONLINE uptime"]
+    HEARTBEAT -->|No| SERIAL_CHECK
+    PUB_HEALTH --> SERIAL_CHECK
+
+    SERIAL_CHECK{"Serial data\navailable?"}
+    SERIAL_CHECK -->|"Yes: N,idx,T,ppm,F,O"| SERIAL_PARSE["Parse serial injection\nupdateHazard"]
+    SERIAL_CHECK -->|No| HAZARD_CHECK
+    SERIAL_PARSE --> HAZARD_CHECK
+
+    HAZARD_CHECK{"hazardChanged\n== true?"}
+    HAZARD_CHECK -->|Yes| REROUTE["updateRouting\nRe-run Dijkstra for ALL victims\nPublish new paths via MQTT"]
+    HAZARD_CHECK -->|No| LED
+    REROUTE --> LED
+
+    LED["updateLEDs\nDraw floor boundaries\nColor nodes by hazard state\nOverlay green path"]
+    LED --> BUZZER["updateBuzzer\nSingle beep if hazard on path"]
+    BUZZER --> DELAY["delay 10ms\nYield to RTOS"]
+    DELAY --> LOOP
+
+    style BOOT fill:#1565c0,color:#fff
+    style LOOP fill:#6a1b9a,color:#fff
+    style REROUTE fill:#c62828,color:#fff
+    style LED fill:#2e7d32,color:#fff
+    style BUZZER fill:#e65100,color:#fff
