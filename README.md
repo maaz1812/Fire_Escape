@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🔥 Fire Commander — Intelligent Fire Evacuation Routing System
 
 <div align="center">
@@ -12,6 +13,9 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](#)
 
 </div>
+
+> **🌐 LIVE CLOUD DASHBOARD:** You can view the real-time Digital Twin for this project directly in your browser without installing anything! 
+> **[Click here to open the Live Fire Commander Dashboard](https://team-maaz-alam-maazalam040-bdff-2f3a46a7.flowfuse.cloud/ui)**
 
 ---
 
@@ -275,7 +279,7 @@ honeywell/
 
 | Tool | Purpose |
 |:-----|:--------|
-| **Node-RED** | Visual flow-based dashboard (runs locally at `localhost:1880`) |
+| **Node-RED** | Visual flow-based dashboard (Hosted on FlowFuse Cloud) |
 | **HiveMQ Public Broker** | Free MQTT broker at `broker.hivemq.com:1883` |
 | **Wokwi CLI** | Cloud-based ESP32 hardware simulator |
 | **PlatformIO** | Build system for compiling ESP32 firmware |
@@ -476,7 +480,12 @@ The Node-RED dashboard is a fully cloud-connected command center with the follow
 | **Live Sensor Feed** | Scrolling terminal-style feed showing raw sensor readings from every node |
 | **2D Digital Twin Grid** | Floor-by-floor colored grid showing the exact state of every room in the building |
 
-### Importing the Dashboard
+### Accessing the Live Dashboard
+
+You don't even need to install Node-RED to view the dashboard! We have deployed it to a public FlowFuse cloud instance. 
+👉 **[View the Live Digital Twin Dashboard Here](https://team-maaz-alam-maazalam040-bdff-2f3a46a7.flowfuse.cloud/ui)**
+
+### (Optional) Running the Dashboard Locally
 
 1. Open Node-RED at `http://localhost:1880`
 2. Click the hamburger menu (☰) → **Import**
@@ -591,3 +600,6 @@ Built for the **Honeywell Campus Hackathon** — Fire Safety & Intelligent Evacu
 ## 📄 License
 
 This project is submitted as part of a campus assessment. All rights reserved.
+=======
+# Fire_Escape
+>>>>>>> d84ff13d383337609ba821ff1368bede8531f858
