@@ -19,6 +19,9 @@
 > 
 > **💡 LIVE ESP32 SIMULATION:** View our live ESP32 NeoPixel hardware simulation directly in Wokwi!
 > **[Click here to open the Live Wokwi Simulation](https://wokwi.com/projects/470602613253407745)**
+>
+> **🔥 DOWNLOAD INJECTOR TOOL:** Download the standalone Windows executable to run the simulation engine (No Python required).
+> **[Click here to Download FireCommander.exe](https://github.com/maaz1812/Fire_Escape/raw/main/dist/FireCommander.exe)**
 
 ---
 
