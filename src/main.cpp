@@ -505,10 +505,13 @@ void setup() {
 }
 
 void loop() {
+  if (!mqttClient.connected()) {
+    connectMQTT();
+  }
   mqttClient.loop();
 
   static unsigned long lastHeartbeat = 0;
-  if (millis() - lastHeartbeat >= 1000) {
+  if (millis() - lastHeartbeat >= 500) {
     lastHeartbeat = millis();
     if (mqttClient.connected()) {
       DynamicJsonDocument doc(128);
