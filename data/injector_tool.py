@@ -423,7 +423,7 @@ class InjectorApp:
                   ).grid(row=0, column=0, padx=5)
 
         tk.Button(links_frame, text="🖥️ Open Wokwi Matrix", bg="#009688", fg="white", font=("Segoe UI", 10, "bold"),
-                  width=25, command=lambda: webbrowser.open("https://wokwi.com/")
+                  width=25, command=lambda: webbrowser.open("https://wokwi.com/projects/470602613253407745")
                   ).grid(row=0, column=1, padx=5)
 
         # --- Log panel ---

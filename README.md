@@ -16,6 +16,9 @@
 
 > **🌐 LIVE CLOUD DASHBOARD:** You can view the real-time Digital Twin for this project directly in your browser without installing anything! 
 > **[Click here to open the Live Fire Commander Dashboard](https://team-maaz-alam-maazalam040-bdff-2f3a46a7.flowfuse.cloud/ui)**
+> 
+> **💡 LIVE ESP32 SIMULATION:** View our live ESP32 NeoPixel hardware simulation directly in Wokwi!
+> **[Click here to open the Live Wokwi Simulation](https://wokwi.com/projects/470602613253407745)**
 
 ---
 
