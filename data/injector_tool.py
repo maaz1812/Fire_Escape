@@ -19,6 +19,7 @@ import json
 import time
 import threading
 import paho.mqtt.client as mqtt
+import webbrowser
 
 # ------------------------------------------------------------
 # Config — matches your ESP32 firmware and floor_graph.json
@@ -413,6 +414,17 @@ class InjectorApp:
         tk.Button(reset_frame, text="Start Simulation", bg="#4CAF50", fg="white", font=("Segoe UI", 12, "bold"),
                   width=25, command=self.start_simulation
                   ).grid(row=0, column=1, padx=5, pady=10)
+
+        links_frame = tk.Frame(self.root)
+        links_frame.pack(side=tk.TOP, pady=5)
+        
+        tk.Button(links_frame, text="🌐 Open Live Dashboard", bg="#FF5722", fg="white", font=("Segoe UI", 10, "bold"),
+                  width=25, command=lambda: webbrowser.open("https://team-maaz-alam-maazalam040-bdff-2f3a46a7.flowfuse.cloud/ui")
+                  ).grid(row=0, column=0, padx=5)
+
+        tk.Button(links_frame, text="🖥️ Open Wokwi Matrix", bg="#009688", fg="white", font=("Segoe UI", 10, "bold"),
+                  width=25, command=lambda: webbrowser.open("https://wokwi.com/")
+                  ).grid(row=0, column=1, padx=5)
 
         # --- Log panel ---
         log_frame = tk.Frame(self.root)
