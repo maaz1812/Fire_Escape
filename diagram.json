@@ -30,8 +30,28 @@
     {
       "type": "wokwi-neopixel-matrix",
       "id": "matrix2",
+      "top": -450,
+      "left": 470,
+      "attrs": {
+        "rows": "16",
+        "cols": "16"
+      }
+    },
+    {
+      "type": "wokwi-neopixel-matrix",
+      "id": "matrix3",
       "top": -150,
       "left": 200,
+      "attrs": {
+        "rows": "16",
+        "cols": "16"
+      }
+    },
+    {
+      "type": "wokwi-neopixel-matrix",
+      "id": "matrix4",
+      "top": -150,
+      "left": 470,
       "attrs": {
         "rows": "16",
         "cols": "16"
@@ -64,6 +84,30 @@
       []
     ],
     [
+      "matrix3:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "matrix3:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
+      "matrix4:VCC",
+      "esp:3V3",
+      "red",
+      []
+    ],
+    [
+      "matrix4:GND",
+      "esp:GND.1",
+      "black",
+      []
+    ],
+    [
       "bz1:1",
       "esp:D5",
       "green",
@@ -77,13 +121,13 @@
     ],
     [
       "esp:TX0",
-      "$serialMonitor:RX",
+      "",
       "",
       []
     ],
     [
       "esp:RX0",
-      "$serialMonitor:TX",
+      "",
       "",
       []
     ],
@@ -96,6 +140,18 @@
     [
       "matrix1:DOUT",
       "matrix2:DIN",
+      "green",
+      []
+    ],
+    [
+      "matrix2:DOUT",
+      "matrix3:DIN",
+      "green",
+      []
+    ],
+    [
+      "matrix3:DOUT",
+      "matrix4:DIN",
       "green",
       []
     ]
